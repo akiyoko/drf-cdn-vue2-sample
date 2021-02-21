@@ -1,15 +1,15 @@
-{% load static %}
 <!DOCTYPE html>
+{% load static %}
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>DRF Sample</title>
   <!-- CSS -->
   <!-- BootstrapVue -->
-  <link rel="stylesheet" href="https://unpkg.com/bootstrap@4.3.1/dist/css/bootstrap.min.css"/>
-  <link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@2.0.0-rc.28/dist/bootstrap-vue.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.css" />
   <style>
     main.container {
       border: 1px solid #cccccc;
@@ -28,164 +28,176 @@
   </style>
 </head>
 <body>
-<div id="app" v-cloak>
-  <!-- ヘッダナビゲーション -->
-  <div id="header">
-    <b-navbar type="dark" variant="dark">
-      <a class="navbar-brand" href="/">DRF Sample</a>
-      <b-navbar-nav class="ml-auto">
-        {% if user.is_authenticated %}
+  <div id="app" v-cloak>
+    <!-- ヘッダナビゲーション -->
+    <div id="header">
+      <b-navbar type="dark" variant="dark">
+        <a class="navbar-brand" href="/">DRF Sample</a>
+        <b-navbar-nav class="ml-auto">
+          {% if user.is_authenticated %}
           <b-nav-item-dropdown right>
             <template slot="button-content">{{ user.get_username }}</template>
-            <b-dropdown-item href="{% url 'rest_framework:logout' %}">ログアウト</b-dropdown-item>
+            <b-dropdown-item href="{% url 'rest_framework:logout' %}">
+              ログアウト
+            </b-dropdown-item>
           </b-nav-item-dropdown>
-        {% else %}
-          <b-nav-item href="{% url 'rest_framework:login' %}">ログイン</b-nav-item>
-        {% endif %}
-      </b-navbar-nav>
-    </b-navbar>
-  </div>
+          {% else %}
+          <b-nav-item href="{% url 'rest_framework:login' %}">
+            ログイン
+          </b-nav-item>
+          {% endif %}
+        </b-navbar-nav>
+      </b-navbar>
+    </div>
 
-  <!-- メッセージエリア -->
-  <div id="messages">
-    <b-alert variant="danger" show v-show="message.error" class="mb-0">
-      #{ message.error }
-    </b-alert>
-    <b-alert
-      variant="warning" show v-show="message.warnings.length > 0" class="mb-0">
-      <p v-for="warning in message.warnings" class="mb-0">#{ warning }</p>
-    </b-alert>
-    <b-alert variant="info" show v-show="message.info" class="mb-0">
-      #{ message.info }
-    </b-alert>
-  </div>
+    <!-- メッセージエリア -->
+    <div id="messages">
+      <b-alert variant="danger" show v-show="message.error" class="mb-0">
+        ${ message.error }
+      </b-alert>
+      <b-alert variant="warning" show v-show="message.warnings.length > 0" class="mb-0">
+        <p v-for="warning in message.warnings" :key="warning" class="mb-0">
+          ${ warning }
+        </p>
+      </b-alert>
+      <b-alert variant="info" show v-show="message.info" class="mb-0">
+        ${ message.info }
+      </b-alert>
+    </div>
 
-  <!-- メインエリア -->
-  <div id="main-page">
-    <main class="container">
-      <p class="h5 mb-4">ホーム</p>
-      <b-form @submit.prevent="submitSave">
-        <div class="row form-group">
-          <label class="col-sm-3 col-form-label">タイトル</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control" v-model="form.book.title">
+    <!-- メインエリア -->
+    <div id="main-page">
+      <main class="container">
+        <p class="h5 mb-4">ホーム</p>
+        <b-form @submit.prevent="submitSave">
+          <div class="row form-group">
+            <label class="col-sm-3 col-form-label">タイトル</label>
+            <div class="col-sm-8">
+              <b-input type="text" class="form-control" v-model="form.book.title" />
+            </div>
           </div>
-        </div>
-        <div class="row form-group">
-          <label class="col-sm-3 col-form-label">価格</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control" v-model="form.book.price">
+          <div class="row form-group">
+            <label class="col-sm-3 col-form-label">価格</label>
+            <div class="col-sm-8">
+              <b-input type="text" class="form-control" v-model="form.book.price" />
+            </div>
           </div>
-        </div>
-        <div class="row text-center mt-5">
-          <div class="col-sm-12">
-            <b-button type="submit" variant="primary">#{ isCreated ? '更新' : '登録' }</b-button>
+          <div class="row text-center mt-5">
+            <div class="col-sm-12">
+              <b-button type="submit" variant="primary">
+                ${ isCreated ? '更新' : '登録' }
+              </b-button>
+            </div>
           </div>
-        </div>
-      </b-form>
-    </main>
-  </div>
+        </b-form>
+      </main>
+    </div>
 
-  <!-- デバッグ -->
-  <div id="debug">
-    <div class="container debug">
-      <pre>#{ $data }}</pre>
+    <!-- デバッグ -->
+    <div class="m-4">
+      <pre>data: ${ $data }</pre>
     </div>
   </div>
-</div>
 
-<!-- JS -->
-<!-- Vue & BootstrapVue -->
-<script src="https://unpkg.com/@babel/polyfill@7.4.4/dist/polyfill.min.js"></script>
-<script src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
-<script src="https://unpkg.com/bootstrap-vue@2.0.0-rc.28/dist/bootstrap-vue.min.js">
-</script>
-<!-- axios -->
-<script src="https://unpkg.com/axios@0.19.0/dist/axios.min.js"></script>
-<script>
-  // CSRFトークンの送信設定
-  axios.defaults.xsrfCookieName = 'csrftoken'
-  axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+  <!-- JS -->
+  <!-- Vue & BootstrapVue -->
+  <script src="https://unpkg.com/babel-polyfill@6.26.0/dist/polyfill.min.js"></script>
+  <script src="https://unpkg.com/vue@2.6.12/dist/vue.min.js"></script>
+  <script src="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.js"></script>
+  <!-- axios -->
+  <script src="https://unpkg.com/axios@0.21.1/dist/axios.min.js"></script>
+  <script>
+    // CSRFトークンの送信設定
+    axios.defaults.xsrfCookieName = "csrftoken";
+    axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
-  // APIクライアント
-  const api = axios.create({
-    baseURL: '/api/v1/',
-    timeout: 5000,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest'
-    }
-  })
+    // APIクライアント
+    const api = axios.create({
+      baseURL: "/api/v1/",
+      timeout: 5000,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest"
+      }
+    });
 
-  // Mustache構文のバッティングを回避
-  Vue.options.delimiters = ['#{', '}']
+    // Mustache構文のバッティングを回避
+    Vue.options.delimiters = ["${", "}"];
 
-  // Vueインスタンスを作成
-  const app = new Vue({
-    el: '#app',
-    data: {
-      form: {
-        book: {
-          title: '',
-          price: 0
+    // Vueインスタンスを作成
+    const app = new Vue({
+      el: "#app",
+      data: {
+        // 入力フォームの内容
+        form: {
+          book: {
+            title: "",
+            price: 0
+          }
+        },
+        // メッセージエリアに表示するメッセージ
+        message: {
+          info: "",
+          warnings: [],
+          error: ""
         }
       },
-      message: {
-        info: '',
-        warnings: [],
-        error: ''
-      }
-    },
-    computed: {
-      // 登録済みかどうか
-      isCreated: function () {
-        return this.form.book.id !== undefined
-      }
-    },
-    methods: {
-      // 登録・更新ボタン押下時に呼び出されるメソッド
-      submitSave: function () {
-        this.clearMessages()
-        api({
-          // 登録済みかどうかでHTTPメソッドとエンドポイントを切り替える
-          method: this.isCreated ? 'put' : 'post',
-          url: this.isCreated ? '/books/' + this.form.book.id + '/' : '/books/',
-          data: {
-            'id': this.form.book.id,
-            'title': this.form.book.title,
-            'price': this.form.book.price
-          }
-        })
-          .then(response => {
-            this.message.info = this.isCreated ? '更新しました。' : '登録しました。'
-            this.form.book = response.data
-          })
-          .catch(error => {
-            const status = error.response ? error.response.status : 500
-            if (status === 400) {
-              // バリデーションNG
-              this.message.warnings = [].concat.apply(
-                [], Object.values(error.response.data))
-            } else if (status === 401) {
-              // 認証エラー
-              this.message.error = '認証エラー'
-            } else if (status === 403) {
-              // 権限エラー
-              this.message.error = '権限エラーです。'
-            } else {
-              // その他のエラー
-              this.message.error = '想定外のエラーです。'
+      computed: {
+        // 登録済みかどうか
+        isCreated: function() {
+          return this.form.book.id !== undefined;
+        }
+      },
+      methods: {
+        // 登録・更新ボタン押下時に呼び出されるメソッド
+        submitSave: function() {
+          this.clearMessages();
+          api({
+            // 登録済みかどうかでHTTPメソッドとエンドポイントを切り替える
+            method: this.isCreated ? "put" : "post",
+            url: this.isCreated
+              ? "/books/" + this.form.book.id + "/"
+              : "/books/",
+            data: {
+              id: this.form.book.id,
+              title: this.form.book.title,
+              price: this.form.book.price
             }
           })
-      },
-      // メッセージをクリア
-      clearMessages: function () {
-        this.message.error = ''
-        this.message.warnings = []
-        this.message.info = ''
+            .then(response => {
+              this.message.info = this.isCreated
+                ? "更新しました。"
+                : "登録しました。";
+              this.form.book = response.data;
+            })
+            .catch(error => {
+              const status = error.response ? error.response.status : 500;
+              if (status === 400) {
+                // バリデーションNG
+                this.message.warnings = [].concat.apply(
+                  [],
+                  Object.values(error.response.data)
+                );
+              } else if (status === 401) {
+                // 認証エラー
+                this.message.error = "認証エラー";
+              } else if (status === 403) {
+                // 権限エラー
+                this.message.error = "権限エラーです。";
+              } else {
+                // その他のエラー
+                this.message.error = "想定外のエラーです。";
+              }
+            });
+        },
+        // メッセージをクリア
+        clearMessages: function () {
+          this.message.error = "";
+          this.message.warnings = [];
+          this.message.info = "";
+        }
       }
-    }
-  })
-</script>
+    });
+  </script>
 </body>
 </html>

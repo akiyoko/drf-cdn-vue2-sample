@@ -13,15 +13,8 @@
   <style>
     main.container {
       border: 1px solid #cccccc;
-      margin-top: 4em;
-      padding: 2em;
       width: 600px;
     }
-
-    .container.debug {
-      margin-top: 2em;
-    }
-
     [v-cloak] {
       display: none;
     }
@@ -72,7 +65,7 @@
 
   <!-- メインエリア -->
   <div id="main-page">
-    <main class="container">
+    <main class="container mt-5 p-5">
       <p class="h5 mb-4">ホーム</p>
       <b-form v-on:submit.prevent="submitSave">
         <div class="row form-group">
@@ -127,12 +120,11 @@
     }
   });
 
-  // Mustache構文のバッティングを回避
-  Vue.options.delimiters = ["${", "}"];
-
   // Vueインスタンスを作成
   const app = new Vue({
     el: "#app",
+    // Mustache構文のバッティングを回避
+    delimiters: ["${", "}"],
     data: {
       // 入力フォームの内容
       form: {
